@@ -28,7 +28,7 @@ class User {
 
       String profileImageUrl = 'https://ui-avatars.com/api/?rounded=true&name=ad&size=300';
     if(responseData['profileImageUrl'] != null) {
-      profileImageUrl = 'https://localhost:7169/images/' + responseData['profileImageUrl'] as String;
+      profileImageUrl = 'http://localhost:7169/images/' + responseData['profileImageUrl'] as String;
     }
 
     return User(
