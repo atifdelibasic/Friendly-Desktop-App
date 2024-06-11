@@ -1,2 +1,3 @@
-# Friendly-Desktop-App
-Friendly-Desktop-App
+# desktop_friendly_app
+
+A new Flutter project.
