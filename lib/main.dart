@@ -1,30 +1,27 @@
-import 'package:desktop_friendly_app/screens/statistics_screen.dart';
-import 'package:desktop_friendly_app/shared_preference.dart';
-import 'package:desktop_friendly_app/user.dart';
-import 'package:desktop_friendly_app/widgets/navigation_drawer.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart' as p;
+import 'auth_proivder.dart'; 
+import 'main_page.dart';
+import 'screens/login_screen.dart'; 
+import 'user.dart'; 
+import 'user_provider.dart'; 
+import 'shared_preference.dart'; 
 
-import 'auth_proivder.dart';
-import 'screens/login_screen.dart';
-import 'user_provider.dart';
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
-  // await SystemChrome.setPreferredOrientations([
-  //   DeviceOrientation.portraitUp,
-  //   DeviceOrientation.portraitDown,
-  // ]);
-
   runApp(
-     MultiProvider(
+    p.MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        p.ChangeNotifierProvider(create: (_) => AuthProvider()),
+        p.ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
-    child:   MyApp()));
+      child: const MyApp(),
+    ),
+  );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -32,54 +29,34 @@ class MyApp extends StatelessWidget {
   Future<User> getUserData() => UserPreferences().getUser();
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Friendly',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: false
-      ),
-      home: FutureBuilder(
-            future: getUserData(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                  return CircularProgressIndicator();
-                default:
-                  if (snapshot.hasError)
-                    return Text('Error: ${snapshot.error}');
-                  else if (snapshot.data?.token == "")
-                    return Login();
-                  else
-
-                    Provider.of<UserProvider>(context).setUser(snapshot.data);
-                    return MainPage();
-              }
-            })
+Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: p.Provider.of<UserProvider>(context, listen: false).initializeUser(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else {
+          return MaterialApp(
+            title: 'Friendly',
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              useMaterial3: false,
+            ),
+            home: p.Consumer<UserProvider>(
+              builder: (context, userProvider, _) {
+                if (userProvider.user == null || userProvider.user?.token == "") {
+                  return const Login();
+                } else {
+                  return MainPage();
+                }
+              },
+            ),
+          );
+        }
+      },
     );
   }
 }
 
-class MainPage extends StatefulWidget {
-  @override
-  _MainPageState createState() => _MainPageState();
-}
-
-class _MainPageState extends State<MainPage> {
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        drawer: NavigationDrawerWidget(),
-        appBar: AppBar(
-          backgroundColor: Colors.deepPurple,
-          title: Text("Friendly - Admin Panel"),
-        ),
-        body: Builder(
-          builder: (context) => Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(horizontal: 32),
-            child: StatisticsScreen()
-          ),
-        ),
-      );
-}

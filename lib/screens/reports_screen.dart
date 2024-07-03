@@ -30,7 +30,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
   void initState() {
     super.initState();
 
-    print("init set state");
     fetchReports();
   }
 
@@ -104,12 +103,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
                         columns: const [
-                          DataColumn(
-                            label: SizedBox(
-                              width: 150, // Set the width for the column
-                              child: Text('Reported by'),
-                            ),
-                          ),
                            DataColumn(
                             label: SizedBox(
                               width: 150, 
@@ -148,10 +141,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         rows: reports.map((report) {
                           return DataRow(
                             cells: [
-                               DataCell(SizedBox(
-                                width: 150, 
-                                child: Text("${report.user.firstName} ${report.user.lastName}"),
-                              )),
                               DataCell(
                                 SizedBox(
                                 width: 150, 

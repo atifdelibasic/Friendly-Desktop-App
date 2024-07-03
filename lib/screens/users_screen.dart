@@ -39,6 +39,9 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> fetchData(int page, [String? searchQuery]) async {
+
+    var token = await UserPreferences().getToken();
+
     String uri = '${AppUrl.baseUrl}/User?page=${currentPage - 1}&PageSize=10';
     if (searchQuery != null && searchQuery.isNotEmpty) {
       uri += '&text=$searchQuery';
@@ -47,7 +50,7 @@ class _HomeState extends State<Home> {
     final response = await http.get(
       Uri.parse(uri),
       headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImF0aWYuZGVsaWJhc2ljQGdtYWlsLmNvbSIsInVzZXJpZCI6IjEiLCJmaXJzdG5hbWUiOiJBdGlmIiwibGFzdG5hbWUiOiJEZWxpYmFzaWMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiaXNzIjoiaHR0cDovL2ZyaWVuZGx5LmFwcCIsImF1ZCI6Imh0dHA6Ly9mcmVpbmRseS5hcHAifQ.DQyZXVrt7gBSSJyfXyd21fzxuhT2Ts4i4s4D0juPXso',
+        'Authorization': 'Bearer $token',
       },
     );
     if (response.statusCode == 200) {
@@ -71,8 +74,8 @@ class _HomeState extends State<Home> {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Confirm Delete'),
-        content: Text('Are you sure you want to delete this item?'),
+        title: const Text('Confirm Delete'),
+        content: Text('Are you sure you want to delete this user?'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -146,8 +149,6 @@ class _HomeState extends State<Home> {
   );
 }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -156,6 +157,7 @@ class _HomeState extends State<Home> {
       children: [
         Row(
           children: [
+            SizedBox(width: 20,),
             Expanded(
               child: TextField(
                 onChanged: searchTextChanged,
@@ -165,29 +167,86 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-           ElevatedButton(
-          onPressed: () {
-               Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => Register(),
-                                  ),
-                                    );
-          },
-          child: Text('Create User'),
-        ),
+            SizedBox(width: 20,),
+
+            ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Register(),
+                    ),
+                  );
+                },
+                icon: Icon(Icons.person_add),
+                label: Text('Create User'),
+                style: ElevatedButton.styleFrom(
+                  primary: Colors.deepPurple,
+                  onPrimary: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  textStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
           ],
         ),
+        SizedBox(height: 10,),
+        Card(
+          
+      color: Colors.yellow[100],
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.warning, color: Colors.yellow[800]),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Warning!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.yellow[800],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Be careful with deleting cities. Changing Active state will do soft delete and those cities will not be shown to the users.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.yellow[900],
+              ),
+            ),
+            SizedBox(height: 16),
+          
+          ],
+        ),
+      ),
+    ),
         SizedBox(height: 10),
         dataList.isNotEmpty
             ? DataTable(
-              border: TableBorder.all(),
+              border: TableBorder.symmetric(),
               columnSpacing: 100,
                 columns: [
                   DataColumn(label: Text('ID')),
                   DataColumn(label: Text('First name')),
                   DataColumn(label: Text('Last name')),
                   DataColumn(label: Text('Email')),
+                  DataColumn(label: Text('Date created')),
                   DataColumn(label: Text('Actions')),
                 ],
                 rows: dataList
@@ -198,17 +257,18 @@ class _HomeState extends State<Home> {
                             DataCell(Container( width: 100, child: Text(data.firstName  , overflow: TextOverflow.ellipsis)),),
                             DataCell(Container( width: 100, child: Text(data.lastName , overflow: TextOverflow.ellipsis)),),
                             DataCell(Container( width: 200, child: Text(data.email , overflow: TextOverflow.ellipsis)),),
+                            DataCell(Container( width: 200, child: Text(data.dateCreated , overflow: TextOverflow.ellipsis)),),
                             DataCell(
                              Row(
                               children: [
                                 IconButton(
-                                  icon:const Icon(Icons.delete),
+                                  icon:const Icon(Icons.delete,  color: Colors.red,),
                                   onPressed: () {
                                     deleteItem(data.id);
                                   },
                                 ),
                                 IconButton(
-                                icon:const Icon(Icons.edit),
+                                icon:const Icon(Icons.edit, color: Colors.blueGrey),
                                 onPressed: () {
                                  
                                 Navigator.push(
@@ -260,9 +320,15 @@ class _HomeState extends State<Home> {
     ),
     ),
         appBar: AppBar(
-          title: const Text('Users'),
+        title: const Row(
+            children: [
+              Icon(Icons.people),
+              SizedBox(width: 10),
+              Text('Users'),
+            ],
+          ),
           centerTitle: true,
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.deepPurple,
         ),
       );
       }

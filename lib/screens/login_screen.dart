@@ -1,9 +1,8 @@
-import 'package:desktop_friendly_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
 import '../auth_proivder.dart';
+import '../main_page.dart';
 import '../user.dart';
 import '../user_provider.dart';
 import '../validator.dart';
@@ -37,6 +36,7 @@ class _LoginState extends State<Login> {
           setState(() {
           _isSubmitting = true;
         });
+        
 
         final Future<Map<String, dynamic>> response =
             auth.login(_email, _password);
@@ -45,6 +45,20 @@ class _LoginState extends State<Login> {
            try {
           if (response['status']) {
             User user = response['user'];
+
+           if(!user.roles.contains("Admin")) {
+              ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Not authorized"),
+                duration: Duration(seconds: 5),
+              ),
+            );
+
+              setState(() {
+                _isSubmitting = false;
+        });
+        return;
+           }
             Provider.of<UserProvider>(context, listen: false).setUser(user);
                setState(() {
           _isSubmitting = false;

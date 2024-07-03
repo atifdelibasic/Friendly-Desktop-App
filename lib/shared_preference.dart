@@ -14,6 +14,7 @@ class UserPreferences {
     prefs.setInt('id', user.id);
     prefs.setString('profileImageUrl', user.profileImage);
     prefs.setString('birthDate', user.birthDate ?? "");
+    prefs.setString('dateCreated', user.dateCreated);
 
     return await prefs.setBool('loggedIn', true);
   }
@@ -27,6 +28,8 @@ class UserPreferences {
     String token = prefs.getString("token") ?? "";
     String profileImageUrl = prefs.getString("profileImageUrl") ?? "";
     String birthDate = prefs.getString("birthDate") ?? "";
+    List<String> roles = prefs.getStringList("roles") ?? [];
+    String dateCreated = prefs.getString("dateCreated") ?? "";
 
     return User(
         id: id,
@@ -36,21 +39,23 @@ class UserPreferences {
         token: token,
         profileImage: profileImageUrl,
         description: "",
-        birthDate: birthDate
+        birthDate: birthDate,
+        roles: roles,
+        dateCreated: dateCreated
        );
   }
 
-  void removeUser() async {
+  Future<void> removeUser() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    prefs.remove('id');
-    prefs.remove('lastName');
-    prefs.remove('email');
-    prefs.remove('firstName');
-    prefs.remove('token');
-    prefs.remove('profileImageUrl');
-    prefs.remove('birthDate');
-
+    await prefs.remove('id');
+    await prefs.remove('lastName');
+    await prefs.remove('email');
+    await prefs.remove('firstName');
+    await prefs.remove('token');
+    await prefs.remove('profileImageUrl');
+    await prefs.remove('birthDate');
+    await prefs.remove('dateCreated');
   }
 
   Future<String> getToken() async {

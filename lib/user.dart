@@ -9,6 +9,8 @@ class User {
   String profileImage;
   String description;
   String? birthDate;
+  List<dynamic> roles;
+  String dateCreated;
 
   User({
     required this.id,
@@ -20,6 +22,8 @@ class User {
     required this.description,
     this.birthDate,
     this.fullName,
+    required this.roles,
+    required this.dateCreated
   });
 
   factory User.fromJson(Map<String, dynamic> responseData) {
@@ -41,6 +45,8 @@ class User {
       profileImage: 'https://ui-avatars.com/api/?rounded=true&name=ad&size=300',
       description: responseData['description'] ?? "",
       birthDate: responseData["birthDate"],
+      roles: responseData["roles"] ?? [],
+      dateCreated: responseData["dateCreated"],
     );
   }
 }

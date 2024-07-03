@@ -1,6 +1,7 @@
-import 'package:desktop_friendly_app/domain/rateapp.dart';
 import 'package:desktop_friendly_app/screens/cities_screen.dart';
 import 'package:desktop_friendly_app/screens/countries_screen.dart';
+import 'package:desktop_friendly_app/screens/hobby_category_screen.dart';
+import 'package:desktop_friendly_app/screens/hobby_screen.dart';
 import 'package:desktop_friendly_app/screens/rate_app_screen.dart';
 import 'package:desktop_friendly_app/screens/reports_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +34,8 @@ class NavigationDrawerWidget extends StatelessWidget {
             child: Text("Cancel"),
           ),
           TextButton(
-            onPressed: () {
-              UserPreferences().removeUser();
+            onPressed: () async{
+              await UserPreferences().removeUser();
                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => Login()),
@@ -50,7 +51,7 @@ class NavigationDrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserProvider>(context, listen: true).user;
+    var user = Provider.of<UserProvider>(context, listen: false).user;
 
 
     return Drawer(
@@ -113,7 +114,19 @@ class NavigationDrawerWidget extends StatelessWidget {
                     onClicked: () => selectedItem(context, 6),
                   ),
                   const SizedBox(height: 24),
+                   buildMenuItem(
+                    text: 'Hobby Categories',
+                    icon: Icons.category,
+                    onClicked: () => selectedItem(context, 7),
+                  ),
+                   const SizedBox(height: 24),
+                   buildMenuItem(
+                    text: 'Hobbies',
+                    icon: Icons.sports_football,
+                    onClicked: () => selectedItem(context, 8),
+                  ),
                   Divider(color: Colors.white70),
+
                   const SizedBox(height: 16),
                   buildMenuItem(
                     text: 'Logout',
@@ -237,6 +250,14 @@ class NavigationDrawerWidget extends StatelessWidget {
          case 6:
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => RateAppScreen(),
+        ));
+        case 7:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => HobbyCategoryScreen(),
+        ));
+         case 8:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => HobbyScreen(),
         ));
     }
   }

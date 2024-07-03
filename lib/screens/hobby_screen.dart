@@ -1,48 +1,73 @@
 import 'dart:convert';
-
-import 'package:desktop_friendly_app/country_response.dart';
-import 'package:desktop_friendly_app/helper.dart';
+import 'package:desktop_friendly_app/domain/hobby_category.dart';
+import 'package:desktop_friendly_app/domain/hobby_category_response.dart';
+import 'package:desktop_friendly_app/domain/hobby_response.dart';
+import 'package:desktop_friendly_app/services/hobby_category_service.dart';
+import 'package:desktop_friendly_app/services/hobby_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pagination/flutter_pagination.dart';
 import 'package:flutter_pagination/widgets/button_styles.dart';
 import 'package:http/http.dart' as http;
 import '../app_url.dart';
-import '../country.dart';
-import '../services/country_service.dart';
+import '../domain/hobby.dart';
 import '../shared_preference.dart';
 
-class CountriesScreen extends StatefulWidget {
-  const CountriesScreen({super.key});
+class HobbyScreen extends StatefulWidget {
+  const HobbyScreen({super.key});
 
   @override
-  State<CountriesScreen> createState() => _CountriesScreenState();
+  State<HobbyScreen> createState() => _HobbyScreenState();
 }
 
-class _CountriesScreenState extends State<CountriesScreen> {
-  final CountryService _countryService = CountryService(baseUrl: 'https://api.example.com');
+class _HobbyScreenState extends State<HobbyScreen> {
+  final HobbyService _hobbyService = HobbyService(baseUrl: 'https://api.example.com');
+  final HobbyCategoryService _hobbyCategoryService = HobbyCategoryService(baseUrl: 'https://api.example.com');
   int currentPage = 1;
   String searchText = '';
   int count = 0;
   bool isLoading = true;
   String error = '';
-  List<Country> countries = [];
+  List<Hobby> hobbies = [];
+  late HobbyCategoryResponse hobbyCategories;
 
   @override
   void initState() {
     super.initState();
-    fetchCountries();
+    fetchHobbies();
+    fetchHobbyCategories();
   }
 
-  Future<void> fetchCountries() async {
+  Future<void> fetchHobbyCategories() async {
     setState(() {
       isLoading = true;
       error = '';
     });
 
     try {
-      CountryResponse response = await _countryService.fetchCountries(searchText, currentPage, 10);
+      HobbyCategoryResponse response = await _hobbyCategoryService.fetchHobbyCategories(searchText, currentPage, 10);
       setState(() {
-        countries = response.countries;
+        hobbyCategories = response;
+        count = response.count;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = 'Error: $e';
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> fetchHobbies() async {
+    setState(() {
+      isLoading = true;
+      error = '';
+    });
+
+    try {
+      HobbyResponse response = await _hobbyService.fetchHobby(searchText, currentPage, 10);
+      setState(() {
+        hobbies = response.hobbies;
         count = response.count;
         isLoading = false;
       });
@@ -60,10 +85,10 @@ class _CountriesScreenState extends State<CountriesScreen> {
       currentPage = 1;
     });
 
-    fetchCountries();
+    fetchHobbies();
   }
 
-  Future<void> createCountry(String name) async {
+  Future<void> createHobbyCategory(String name) async {
     String token = await UserPreferences().getToken();
 
     Map<String, String> headers = {
@@ -71,28 +96,28 @@ class _CountriesScreenState extends State<CountriesScreen> {
       'Authorization': 'Bearer $token',
     };
 
-    Map<String, dynamic> data = {'name': name};
+    Map<String, dynamic> data = {'title': name, 'hobbyCategoryId': 1};
 
     final response = await http.post(
-      Uri.parse('${AppUrl.baseUrl}/country'),
+      Uri.parse('${AppUrl.baseUrl}/hobbycategory'),
       headers: headers,
       body: jsonEncode(data),
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to create country');
+      throw Exception('Failed to create category');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Country created successfully!', style: TextStyle(color: Colors.white)),
+          content: Text('Hobby created successfully!', style: TextStyle(color: Colors.white)),
         ),
       );
-      fetchCountries();
+      fetchHobbies();
     }
   }
 
-  Future<void> updateCountry(int id, String name) async {
+  Future<void> updateHobbyCategory(int id, String name) async {
     String token = await UserPreferences().getToken();
 
     Map<String, String> headers = {
@@ -100,24 +125,24 @@ class _CountriesScreenState extends State<CountriesScreen> {
       'Authorization': 'Bearer $token',
     };
 
-    Map<String, dynamic> data = {'name': name};
+    Map<String, dynamic> data = {'title': name };
 
     final response = await http.put(
-      Uri.parse('${AppUrl.baseUrl}/country/$id'),
+      Uri.parse('${AppUrl.baseUrl}/hobby/$id'),
       headers: headers,
       body: jsonEncode(data),
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to update country');
+      throw Exception('Failed to update hobby');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Country updated successfully!', style: TextStyle(color: Colors.white)),
+          content: Text('Hobby updated successfully!', style: TextStyle(color: Colors.white)),
         ),
       );
-      fetchCountries();
+      fetchHobbies();
     }
   }
 
@@ -154,9 +179,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
         backgroundColor: Colors.deepPurple,
         title: const Row(
             children: [
-              Icon(Icons.location_pin),
-              SizedBox(width: 10),
-              Text('Countries'),
+              Text('Hobby categories'),
             ],
           ),
       ),
@@ -239,12 +262,6 @@ class _CountriesScreenState extends State<CountriesScreen> {
                           DataColumn(
                             label: SizedBox(
                               width: 150,
-                              child: Text('ID'),
-                            ),
-                          ),
-                          DataColumn(
-                            label: SizedBox(
-                              width: 150,
                               child: Text('Name'),
                             ),
                           ),
@@ -257,56 +274,41 @@ class _CountriesScreenState extends State<CountriesScreen> {
                           DataColumn(
                             label: SizedBox(
                               width: 100,
-                              child: Text('Edit'),
+                              child: Text('Actions'),
                             ),
                           ),
-                          DataColumn(
-                            label: SizedBox(
-                              width: 100,
-                              child: Text('Active'),
-                            ),
-                          ),
+                        
                         ],
-                        rows: countries.map((country) {
+                        rows: hobbies.map((hobbyCategory) {
                           return DataRow(
                             cells: [
                               DataCell(SizedBox(
                                 width: 150,
-                                child: Text(country.id.toString()),
+                                child: Text(hobbyCategory.title),
                               )),
                               DataCell(SizedBox(
                                 width: 150,
-                                child: Text(country.name),
+                                child: Text(hobbyCategory.dateCreated),
                               )),
-                              DataCell(SizedBox(
-                                width: 150,
-                                child: Text(formatDateString(country.dateCreated)),
-                              )),
-                              DataCell(SizedBox(
-                                width: 50,
-                                child: IconButton(
-                                  icon: const Icon(Icons.edit),
+                             DataCell(
+                             Row(
+                              children: [
+                                IconButton(
+                                  icon:const Icon(Icons.delete,  color: Colors.red,),
                                   onPressed: () {
-                                    _showEditCountryModal(context, country);
+                                    deleteItem(hobbyCategory.id);
                                   },
                                 ),
-                              )),
-                              DataCell(SizedBox(
-                                width: 100,
-                                child: StatefulBuilder(
-                                  builder: (BuildContext context, StateSetter setState) {
-                                    return Switch(
-                                      value: country.deletedAt == null,
-                                      onChanged: (bool value) async {
-                                        setState(() {
-                                          country.deletedAt = !value ? DateTime.now().toIso8601String() : null;
-                                        });
-                                        await deleteCountry(country.id, !value);
-                                      },
-                                    );
+                                IconButton(
+                                icon:const Icon(Icons.edit, color: Colors.blueGrey),
+                                onPressed: () {
+                                    _showEditCountryModal(context, hobbyCategory);
                                   },
                                 ),
-                              )),
+                              ],
+                            ),
+                          ),
+                              
                             ],
                           );
                         }).toList(),
@@ -330,7 +332,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                       setState(() {
                         currentPage = number;
                       });
-                      await fetchCountries();
+                      await fetchHobbies();
                     },
                     useGroup: false,
                     totalPage: (count / 10).ceil() == 0 ? 1 : (count / 10).ceil(),
@@ -345,30 +347,53 @@ class _CountriesScreenState extends State<CountriesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showCreateCountryModal(context);
+          _showCreateHobbyCategoryModal(context);
         },
-        tooltip: 'Create Country',
+        tooltip: 'Create Hobby',
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _showCreateCountryModal(BuildContext context) {
-    String countryName = '';
+  void _showCreateHobbyCategoryModal(BuildContext context) {
+    String hobbyCategoryName = '';
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Create Country'),
-          content: TextField(
-            onChanged: (value) {
-              countryName = value;
-            },
-            decoration: InputDecoration(
-              hintText: 'Enter country name',
+          title: Text('Create Hobby'),
+          content:  Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              onChanged: (value) {
+                hobbyCategoryName = value;
+              },
+              decoration: InputDecoration(
+                hintText: 'Enter hobby name',
+              ),
             ),
-          ),
+            SizedBox(height: 20),
+            DropdownButtonFormField<HobbyCategory>(
+              onChanged: (HobbyCategory? value) {
+                setState(() {
+                  // selectedCountry = value;
+                });
+              },
+              items: hobbyCategories.hobbyCategories.map((HobbyCategory country) {
+                return DropdownMenuItem<HobbyCategory>(
+                  value: country,
+                  child: Text(country.name),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                labelText: 'Select Hobby Category',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -378,8 +403,8 @@ class _CountriesScreenState extends State<CountriesScreen> {
             ),
             TextButton(
               onPressed: () async {
-                if (countryName.isNotEmpty) {
-                  await createCountry(countryName);
+                if (hobbyCategoryName.isNotEmpty) {
+                  await createHobbyCategory(hobbyCategoryName);
                   Navigator.of(context).pop();
                 }
               },
@@ -391,21 +416,76 @@ class _CountriesScreenState extends State<CountriesScreen> {
     );
   }
 
-  void _showEditCountryModal(BuildContext context, Country country) {
-  TextEditingController textEditingController = TextEditingController(text: country.name);
+  void deleteItem(int id) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirm Delete'),
+        content: Text('Are you sure?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              String token = await UserPreferences().getToken();
+
+              String uri = "${AppUrl.baseUrl}/hobby/$id";
+
+              var res = await http.delete(
+                Uri.parse(uri),
+                headers: {
+                  'Authorization': 'Bearer $token',
+                },
+              );
+
+              if (res.statusCode == 200) {
+               
+                 ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.green,
+                    content: Text('User deleted successfully!', style: TextStyle(color: Colors.white)),
+                  ),
+                );
+                fetchHobbies();
+
+              } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: Colors.red,
+                    content: Text('Something went wrong!', style: TextStyle(color: Colors.white)),
+                  ),
+                );
+              }
+
+              Navigator.of(context).pop();
+            },
+            child: Text('Delete'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+  void _showEditCountryModal(BuildContext context, Hobby country) {
+  TextEditingController textEditingController = TextEditingController(text: country.title);
 
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Edit Country'),
+        title: Text('Edit Hobby'),
         content: TextField(
-          controller: textEditingController, // Use the controller to set initial value
+          controller: textEditingController,
           onChanged: (value) {
-            // You can remove this onChanged callback if you don't need it
           },
           decoration: InputDecoration(
-            hintText: 'Enter country name',
+            hintText: 'Enter  name',
           ),
         ),
         actions: <Widget>[
@@ -417,9 +497,9 @@ class _CountriesScreenState extends State<CountriesScreen> {
           ),
           TextButton(
             onPressed: () async {
-              String updatedCountryName = textEditingController.text;
-              if (updatedCountryName.isNotEmpty) {
-                await updateCountry(country.id, updatedCountryName);
+              String updateHobbyCategoryName = textEditingController.text;
+              if (updateHobbyCategoryName.isNotEmpty) {
+                await updateHobbyCategory(country.id, updateHobbyCategoryName);
                 Navigator.of(context).pop();
               }
             },

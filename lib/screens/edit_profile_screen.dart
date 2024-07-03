@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../app_url.dart';
-import '../hobby.dart';
+
+import '../domain/hobby.dart';
 import '../shared_preference.dart';
 import '../user.dart';
 import '../user_provider.dart';

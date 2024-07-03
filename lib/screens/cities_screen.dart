@@ -45,13 +45,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
   }
 
   Future<void> createCity(String name, int countryId) async {
-    print("create city");
     String token =  await UserPreferences().getToken();
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
 
     Map<String, dynamic> data = {'name': name, 'countryId' : countryId};
 
@@ -81,11 +75,6 @@ class _CitiesScreenState extends State<CitiesScreen> {
   Future<void> editCity( int cityId, String name, int countryId) async {
     String token =  await UserPreferences().getToken();
 
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-
     Map<String, dynamic> data = {'name': name, 'countryId' : countryId};
 
      final response = await http.put(
@@ -112,7 +101,6 @@ class _CitiesScreenState extends State<CitiesScreen> {
 
 
   Future<void> deleteCity( int cityId, bool isDeleted) async {
-    print("is delted " + isDeleted.toString());
     String token =  await UserPreferences().getToken();
 
     Map<String, String> headers = {
@@ -288,7 +276,14 @@ void _showEditCityModal(BuildContext context, City city) {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cities'),
+        backgroundColor: Colors.deepPurple,
+         title: const Row(
+            children: [
+              Icon(Icons.location_city),
+              SizedBox(width: 10),
+              Text('Cities'),
+            ],
+          ),
       ),
       body: Column(
         children: [
@@ -309,6 +304,48 @@ void _showEditCityModal(BuildContext context, City city) {
               ],
             ),
           ),
+          Card(
+      color: Colors.yellow[100],
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.warning, color: Colors.yellow[800]),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Warning!',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.yellow[800],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Be careful with deleting cities. Changing Active state will do soft delete and those cities will not be shown to the users.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.yellow[900],
+              ),
+            ),
+            SizedBox(height: 16),
+          
+          ],
+        ),
+      ),
+    ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -322,6 +359,12 @@ void _showEditCityModal(BuildContext context, City city) {
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
                         columns: const [
+                           DataColumn(
+                            label: SizedBox(
+                              width: 150, // Set the width for the column
+                              child: Text('ID'),
+                            ),
+                          ),
                           DataColumn(
                             label: SizedBox(
                               width: 150, // Set the width for the column
@@ -356,6 +399,10 @@ void _showEditCityModal(BuildContext context, City city) {
                         rows: cities.map((city) {
                           return DataRow(
                             cells: [
+                               DataCell(SizedBox(
+                                width: 150, 
+                                child: Text(city.id.toString()),
+                              )),
                               DataCell(SizedBox(
                                 width: 150, 
                                 child: Text(city.name),
@@ -382,16 +429,14 @@ void _showEditCityModal(BuildContext context, City city) {
                                 child: StatefulBuilder(
                                   builder: (BuildContext context, StateSetter setState) {
                                     return Switch(
-                                      value: city.deletedAt == null,
-                                      onChanged: (bool value)async {
-
-                                        setState(() {
-                                        city.deletedAt = value ? null : DateTime.now().toIso8601String();
-                                      });
-                                        await deleteCity(city.id, !value);
-
-                                      },
-                                    );
+                                        value: city.deletedAt == null, 
+                                        onChanged: (bool value) async {
+                                          setState(() {
+                                            city.deletedAt = !value ? DateTime.now().toIso8601String() : null;
+                                          });
+                                          await deleteCity(city.id, !value); 
+                                        },
+                                      );
                                   },
                                 ),
                               )),

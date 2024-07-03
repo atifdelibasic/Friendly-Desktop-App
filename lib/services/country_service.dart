@@ -23,8 +23,6 @@ class CountryService {
         'Authorization': 'Bearer $token',
       },);
 
-      print(response.statusCode);
-
     if (response.statusCode == 200) {
 
       Map<String, dynamic> responseBody = jsonDecode(response.body) as Map<String, dynamic>;
