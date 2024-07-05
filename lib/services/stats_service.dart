@@ -21,6 +21,8 @@ class StatsService {
       final Map<String, dynamic> json = jsonDecode(response.body);
       return Stats.fromJson(json);
     } else {
+      print("status code" + response.statusCode.toString());
+      print(token);
       throw Exception('Failed to load stats');
     }
   }

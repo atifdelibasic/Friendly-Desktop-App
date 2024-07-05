@@ -11,59 +11,59 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  late ConnectionSettings settings;
-  late Client client;
-  late Channel channel;
-  late Queue queue;
+  // late ConnectionSettings settings;
+  // late Client client;
+  // late Channel channel;
+  // late Queue queue;
 
   @override
   void initState() {
     super.initState();
-    connectToRabbitMQ();
+    // connectToRabbitMQ();
   }
 
-  void connectToRabbitMQ() async {
-    settings = ConnectionSettings(
-      host: 'localhost',
-      port: 5672,
-      virtualHost: '/',
-      authProvider: const PlainAuthenticator('myuser', 'mypass'),
-    );
+  // void connectToRabbitMQ() async {
+  //   settings = ConnectionSettings(
+  //     host: 'localhost',
+  //     port: 5672,
+  //     virtualHost: '/',
+  //     authProvider: const PlainAuthenticator('myuser', 'mypass'),
+  //   );
 
-    client = Client(settings: settings);
-    try {
-      channel = await client.channel();
-      queue = await channel.queue('userRegisterQueue');
+  //   client = Client(settings: settings);
+  //   try {
+  //     channel = await client.channel();
+  //     queue = await channel.queue('userRegisterQueue');
 
-      var consumer = await queue.consume();
+  //     var consumer = await queue.consume();
 
 
-      consumer.listen((AmqpMessage message) {
+  //     consumer.listen((AmqpMessage message) {
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            content: Text(message.payloadAsString),
-            duration: Duration(seconds: 3),
-             action: SnackBarAction(
-              label: 'DISMISS',
-              textColor: Colors.white,
-              onPressed: () {
-                // Code to execute when the action button is pressed
-              },
-    ),
-          ),
-        );
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(
+  //           backgroundColor: Colors.green,
+  //           content: Text(message.payloadAsString),
+  //           duration: Duration(seconds: 3),
+  //            action: SnackBarAction(
+  //             label: 'DISMISS',
+  //             textColor: Colors.white,
+  //             onPressed: () {
+  //               // Code to execute when the action button is pressed
+  //             },
+  //   ),
+  //         ),
+  //       );
 
-      });
-    } catch (e) {
-      print("An error occurred: $e");
-    }
-  }
+  //     });
+  //   } catch (e) {
+  //     print("An error occurred: $e");
+  //   }
+  // }
 
   @override
   void dispose() {
-    client.close();
+    // client.close();
     super.dispose();
   }
 

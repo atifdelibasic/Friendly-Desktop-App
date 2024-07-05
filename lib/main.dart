@@ -2,12 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart' as p;
-import 'auth_proivder.dart'; 
+import 'auth_proivder.dart';
 import 'main_page.dart';
-import 'screens/login_screen.dart'; 
-import 'user.dart'; 
-import 'user_provider.dart'; 
-import 'shared_preference.dart'; 
+import 'screens/login_screen.dart';
+import 'user.dart';
+import 'user_provider.dart';
+import 'shared_preference.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -29,9 +29,10 @@ class MyApp extends StatelessWidget {
   Future<User> getUserData() => UserPreferences().getUser();
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return FutureBuilder(
-      future: p.Provider.of<UserProvider>(context, listen: false).initializeUser(),
+      future:
+          p.Provider.of<UserProvider>(context, listen: false).initializeUser(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -46,7 +47,8 @@ Widget build(BuildContext context) {
             ),
             home: p.Consumer<UserProvider>(
               builder: (context, userProvider, _) {
-                if (userProvider.user == null || userProvider.user?.token == "") {
+                if (userProvider.user == null ||
+                    userProvider.user?.token == "") {
                   return const Login();
                 } else {
                   return MainPage();
@@ -59,4 +61,3 @@ Widget build(BuildContext context) {
     );
   }
 }
-
