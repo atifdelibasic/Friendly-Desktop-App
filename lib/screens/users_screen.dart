@@ -42,7 +42,7 @@ class _HomeState extends State<Home> {
 
     var token = await UserPreferences().getToken();
 
-    String uri = '${AppUrl.baseUrl}/User?page=${currentPage - 1}&PageSize=10';
+    String uri = '${AppUrl.baseUrl}/User?page=${currentPage - 1}&PageSize=9';
     if (searchQuery != null && searchQuery.isNotEmpty) {
       uri += '&text=$searchQuery';
     }
@@ -154,7 +154,9 @@ class _HomeState extends State<Home> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+
       children: [
+            SizedBox(height: 20,),
         Row(
           children: [
             SizedBox(width: 20,),
@@ -167,7 +169,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ),
-            SizedBox(width: 20,),
+            const SizedBox(width: 20,),
 
             ElevatedButton.icon(
                 onPressed: () {
@@ -178,65 +180,22 @@ class _HomeState extends State<Home> {
                     ),
                   );
                 },
-                icon: Icon(Icons.person_add),
-                label: Text('Create User'),
+                icon: const Icon(Icons.person_add),
+                label: const Text('Create User'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.deepPurple,
-                  onPrimary: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  textStyle: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  textStyle: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
+            SizedBox(width: 20,),
+
           ],
         ),
-        SizedBox(height: 10,),
-        Card(
-          
-      color: Colors.yellow[100],
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.warning, color: Colors.yellow[800]),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Warning!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.yellow[800],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Be careful with deleting cities. Changing Active state will do soft delete and those cities will not be shown to the users.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.yellow[900],
-              ),
-            ),
-            SizedBox(height: 16),
-          
-          ],
-        ),
-      ),
-    ),
-        SizedBox(height: 10),
+       
+        const SizedBox(height: 10),
         dataList.isNotEmpty
             ? DataTable(
               border: TableBorder.symmetric(),
@@ -257,7 +216,7 @@ class _HomeState extends State<Home> {
                             DataCell(Container( width: 100, child: Text(data.firstName  , overflow: TextOverflow.ellipsis)),),
                             DataCell(Container( width: 100, child: Text(data.lastName , overflow: TextOverflow.ellipsis)),),
                             DataCell(Container( width: 200, child: Text(data.email , overflow: TextOverflow.ellipsis)),),
-                            DataCell(Container( width: 200, child: Text(data.dateCreated , overflow: TextOverflow.ellipsis)),),
+                            DataCell(Container( width: 150, child: Text(data.dateCreated , overflow: TextOverflow.ellipsis)),),
                             DataCell(
                              Row(
                               children: [
@@ -274,11 +233,9 @@ class _HomeState extends State<Home> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => EditProfileScreen(user: data),
+                                    builder: (context) => EditProfileScreen(user: data, fetchData: fetchData, page: currentPage, search: searchText ),
                                   ),
                                     );
-
-                                    
                                   },
                                 ),
                               ],
@@ -312,8 +269,8 @@ class _HomeState extends State<Home> {
             fetchData(currentPage, searchText);
           },
           useGroup: false,
-            totalPage: (count / 10).ceil() == 0 ? 1 : (count / 10).ceil(),
-            show: (count / 10).ceil() <= 1 ? 0 : (count / 10).ceil() - 1,
+            totalPage: (count / 9).ceil() == 0 ? 1 : (count / 9).ceil(),
+            show: (count / 9).ceil() <= 1 ? 0 : (count / 9).ceil() - 1,
           currentPage: currentPage,
         ),
       ],

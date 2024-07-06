@@ -210,7 +210,7 @@ class _HobbyCategoryScreenState extends State<HobbyCategoryScreen> {
             ),
             SizedBox(height: 8),
             Text(
-              'Be careful with deleting countries. Changing Active state will do soft delete and those countries will not be shown to the users.',
+              'Be careful with categories countries.',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.yellow[900],
@@ -401,7 +401,7 @@ class _HobbyCategoryScreenState extends State<HobbyCategoryScreen> {
                  ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     backgroundColor: Colors.green,
-                    content: Text('User deleted successfully!', style: TextStyle(color: Colors.white)),
+                    content: Text('Hobby deleted successfully!', style: TextStyle(color: Colors.white)),
                   ),
                 );
                 fetchHobbyCategories();

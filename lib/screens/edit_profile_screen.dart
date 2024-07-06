@@ -14,8 +14,11 @@ import '../user_provider.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final User user;
+  final Future<void> Function(int, [String?])? fetchData;
+  final page;
+  final search;
 
-  const EditProfileScreen({Key? key, required this.user}) : super(key: key);
+  const EditProfileScreen({Key? key, required this.user,  this.fetchData, this.page, this.search}) : super(key: key);
 
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
@@ -29,7 +32,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   DateTime? _dateOfBirth;
   List<int> _selectedHobbies = [];
   late Map<int, String> _hobbyMap = {}; 
-
   late String imageUrl = "";
 
   @override
@@ -154,20 +156,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final String? imagePath = responseBody['profileImageUrl'];
         widget.user.profileImage = imagePath != null && imagePath != "" ? "${AppUrl.baseUrl}/images/$imagePath" : 'https://ui-avatars.com/api/?rounded=true&name=ad&size=300';
         
-        print('Image Path: $imagePath');
+       
 
         Provider.of<UserProvider>(context, listen: false).setUser(widget.user);
         UserPreferences().saveUser(widget.user);
 
+         if (widget.fetchData != null) {
+        await widget.fetchData!(widget.page, widget.search);
+      }
+
 
         Navigator.pop(context, true); 
-        //  Fluttertoast.showToast(
-        //   msg: 'Profile updated successfully!',
-        //   toastLength: Toast.LENGTH_SHORT,
-        //   gravity: ToastGravity.BOTTOM,
-        //   backgroundColor: Colors.green,
-        //   textColor: Colors.white,
-        // );
+       
       } else {
         throw Exception('Failed to update profile ' + response.statusCode.toString());
       }
@@ -434,7 +434,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onPressed: _updateProfile,
                 child: Text('Update Profile'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.teal,
+                  // primary: Colors.teal,
                   padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   textStyle: TextStyle(fontSize: 18),
                   shape: RoundedRectangleBorder(

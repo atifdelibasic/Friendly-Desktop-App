@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../auth_proivder.dart';
 import '../main_page.dart';
@@ -90,8 +89,6 @@ class _LoginState extends State<Login> {
   }
         });
       }
-          
-
     }
 
     return Scaffold(
@@ -116,19 +113,12 @@ class _LoginState extends State<Login> {
                 ),
                 Text(
                   'Hello Again!',
-                  style: GoogleFonts.montserrat(
-                      fontSize: 30, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(
                   height: 10,
                 ),
                 Text(
                   'Login to continue.',
-                  style: GoogleFonts.montserrat(
-                    fontSize: 20,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w300,
-                  ),
                 ),
                 SizedBox(
                   height: 50,
@@ -136,7 +126,6 @@ class _LoginState extends State<Login> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextFormField(
-                    style: GoogleFonts.montserrat(),
                     autofocus: false,
                     validator: validateEmail,
                     onSaved: (value) => _email = value,
@@ -150,7 +139,6 @@ class _LoginState extends State<Login> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: TextFormField(
-                    style: GoogleFonts.montserrat(),
                     obscureText: !_isPasswordVisible,
                     autofocus: false,
                     // validator: (value) => value!.isEmpty
@@ -192,8 +180,6 @@ class _LoginState extends State<Login> {
                     child: Center(
                       child: Text(
                         'Log In',
-                        style: GoogleFonts.montserrat(
-                            fontSize: 16, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ),

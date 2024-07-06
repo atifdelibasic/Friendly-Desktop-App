@@ -6,7 +6,7 @@ import 'user.dart';
 class Report {
   final int id;
   final String additionalComment;
-  final User user;
+  final User? user;
   final ReportReason reportReason;
   final String dateCreated;
   final Post? post;
@@ -29,7 +29,7 @@ class Report {
       id: json['id'] as int,
       seen: json['seen'] as bool,
       additionalComment: json['additionalComment'] as String,
-      user: User.fromJson(json['user'] as Map<String, dynamic>),
+      user: json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>): null,
       reportReason: ReportReason.fromJson(json['reportReason'] as Map<String, dynamic>),
       dateCreated: json['dateCreated'] as String,
       post: json['post'] != null ? Post.fromJson(json['post'] as Map<String, dynamic>) : null, 

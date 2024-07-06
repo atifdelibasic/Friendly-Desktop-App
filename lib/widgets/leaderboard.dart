@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../domain/user_post_count.dart'; 
 
 class Leaderboard extends StatelessWidget {
@@ -16,10 +15,6 @@ class Leaderboard extends StatelessWidget {
         children: [
           Text(
             'Top Active Users',
-            style: GoogleFonts.montserrat(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600  ,
-                  ),    
           ),
           SizedBox(height: 16.0),
           ListView.builder(
@@ -33,19 +28,11 @@ class Leaderboard extends StatelessWidget {
                 margin: EdgeInsets.symmetric(vertical: 8.0),
                 child: ListTile(
                   leading: CircleAvatar(
-                    child: Text(user.username[0], style: GoogleFonts.montserrat(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600  ,
-                  ),    ),
+                    child: Text(user.username[0],     ),
                   ),
                   title: Text(user.username),
-                  subtitle: Text('${user.postCount} posts', style: GoogleFonts.montserrat(
-                  fontSize: 12,
-                ),),
-                  trailing: Text('# ${index + 1}', style: GoogleFonts.montserrat(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold
-                ),),
+                  subtitle: Text('${user.postCount} posts',),
+                  trailing: Text('# ${index + 1}',),
                 ),
               );
             },

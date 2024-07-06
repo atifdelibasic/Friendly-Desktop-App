@@ -3,7 +3,7 @@ import '../user.dart';
 class FeedbackCustom {
   final int id;
   final String text;
-  final User user;
+  final User? user;
   final String dateCreated;
 
   FeedbackCustom({
@@ -18,7 +18,7 @@ class FeedbackCustom {
       id: json['id'] as int,
       text: json['text'] as String,
       dateCreated: json['dateCreated'] as String,
-      user: User.fromJson(json['user'] as Map<String, dynamic>),
+      user: json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>): null
     );
   }
 }

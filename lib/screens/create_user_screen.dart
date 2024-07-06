@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_pw_validator/flutter_pw_validator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/scheduler.dart';
-
 import '../auth_proivder.dart';
 import '../validation_messages.dart';
 import '../validator.dart';
@@ -17,23 +14,22 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  Duration get loginTime => Duration(milliseconds: timeDilation.ceil() * 2250);
-
   bool _isSubmitting = false;
+  bool isAdmin = false;
+  bool _passwordVisible = false;
+
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FlutterPwValidatorState> validatorKey =
+      GlobalKey<FlutterPwValidatorState>();
 
   @override
   Widget build(BuildContext context) {
     AuthProvider auth = Provider.of<AuthProvider>(context);
-    final TextEditingController controller = TextEditingController();
-
-    final _formKey = GlobalKey<FormState>();
-    final GlobalKey<FlutterPwValidatorState> validatorKey =
-        GlobalKey<FlutterPwValidatorState>();
-
-    String? _firstName = "";
-    String? _lastName = "";
-    String? _password = "";
-    String? _email = "";
 
     doRegister() {
       final form = _formKey.currentState;
@@ -41,13 +37,18 @@ class _RegisterState extends State<Register> {
       if (form!.validate()) {
         form.save();
 
-        // Set the submitting flag to true
         setState(() {
           _isSubmitting = true;
         });
 
         try {
-          auth.register(_email, _password, _firstName, _lastName).then((response) {
+          auth.register(
+            _emailController.text,
+            _passwordController.text,
+            _firstNameController.text,
+            _lastNameController.text,
+            isAdmin,
+          ).then((response) {
             if (!mounted) return;
             setState(() {
               _isSubmitting = false;
@@ -58,13 +59,12 @@ class _RegisterState extends State<Register> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text("Success"),
-                    content: Text("User created successfully!"),
+                    title: const Text("Success"),
+                    content: const Text("User created successfully!"),
                     actions: <Widget>[
                       TextButton(
-                        child: Text("Confirm"),
+                        child: const Text("Confirm"),
                         onPressed: () {
-                          // Navigator.pushReplacementNamed(context, '/login');
                           Navigator.pop(context);
                         },
                       ),
@@ -74,12 +74,11 @@ class _RegisterState extends State<Register> {
               );
               form.reset();
             } else {
-              // Display errors in a pop-up modal
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text("Error"),
+                    title: const Text("Error"),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +88,7 @@ class _RegisterState extends State<Register> {
                     ),
                     actions: <Widget>[
                       TextButton(
-                        child: Text("OK"),
+                        child: const Text("OK"),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -101,7 +100,6 @@ class _RegisterState extends State<Register> {
             }
           });
         } catch (e) {
-          print("Caught error");
           setState(() {
             _isSubmitting = false;
           });
@@ -113,10 +111,11 @@ class _RegisterState extends State<Register> {
       child: Scaffold(
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.deepPurple,
           elevation: 0,
+          title: const Text("Create user"),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -128,60 +127,78 @@ class _RegisterState extends State<Register> {
               key: _formKey,
               autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                padding: const EdgeInsets.symmetric(horizontal: 250.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 50),
-                    Text(
-                      'Create a user',
-                      style: GoogleFonts.montserrat(
-                        fontSize: 25,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black,
+                    const SizedBox(height: 50),
+                    const Text(
+                        'Create a user',
+                        style: TextStyle(
+                          fontSize: 24.0, // Adjust the size as needed
+                          fontWeight: FontWeight.w500 , // Optional: to make the text bold
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     TextFormField(
                       textCapitalization: TextCapitalization.words,
-                      style: GoogleFonts.montserrat(),
                       textInputAction: TextInputAction.done,
+                      controller: _firstNameController,
                       validator: (value) => validateName(value, 'First name'),
-                      onSaved: (value) => _firstName = value,
                       decoration: buildInputDecoration("First name", Icons.person),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
                       textCapitalization: TextCapitalization.words,
-                      style: GoogleFonts.montserrat(),
+                      controller: _lastNameController,
                       validator: (value) => validateName(value, 'Last name'),
-                      onSaved: (value) => _lastName = value,
                       decoration: buildInputDecoration("Last name", Icons.person),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
-                      style: GoogleFonts.montserrat(),
+                      controller: _emailController,
                       validator: validateEmail,
                       decoration: buildInputDecoration("Email", Icons.email_rounded),
-                      onChanged: (value) => _email = value,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
+                    CheckboxListTile(
+                      title: const Text('Make an admin'),
+                      subtitle: const Text("This will add admin permissions (admin role)."),
+                      value: isAdmin, // set initial value here
+                      onChanged: (newValue) {
+                        setState(() {
+                          isAdmin = newValue!;
+                        });
+                      },
+                      controlAffinity: ListTileControlAffinity.leading,
+                    ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        TextFormField(
-                          style: GoogleFonts.montserrat(),
-                          obscureText: true,
-                          controller: controller,
-                          validator: (value) =>
-                              value!.isEmpty ? ValidationMessages.passwordRequired : null,
-                          onChanged: (value) => _password = value,
-                          decoration: buildInputDecoration("Password", Icons.lock_rounded),
-                        ),
-                        SizedBox(height: 15),
+                       TextFormField(
+      obscureText: !_passwordVisible,
+      controller: _passwordController,
+      validator: (value) =>
+          value!.isEmpty ? ValidationMessages.passwordRequired : null,
+      decoration: InputDecoration(
+        labelText: "Password",
+        prefixIcon: const Icon(Icons.lock_rounded),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+          ),
+          onPressed: () {
+            setState(() {
+              _passwordVisible = !_passwordVisible;
+            });
+          },
+        ),
+      ),
+    ),
+                        const SizedBox(height: 15),
                         FlutterPwValidator(
                           key: validatorKey,
-                          controller: controller,
+                          controller: _passwordController,
                           minLength: 8,
                           uppercaseCharCount: 2,
                           numericCharCount: 3,
@@ -190,21 +207,22 @@ class _RegisterState extends State<Register> {
                           width: 400,
                           height: 200,
                           onSuccess: () {
-                            // ScaffoldMessenger.of(context).showSnackBar(
-                            //   SnackBar(
-                            //     content: Text("Password is matched."),
-                            //   ),
-                            // );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Password valid."),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
                           },
                         ),
                       ],
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     ElevatedButton(
-                      onPressed: _isSubmitting ? null : doRegister, // Disable button when submitting
+                      onPressed: _isSubmitting ? null : doRegister, 
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -213,7 +231,7 @@ class _RegisterState extends State<Register> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (_isSubmitting)
-                            SizedBox(
+                            const SizedBox(
                               width: 24,
                               height: 24,
                               child: CircularProgressIndicator(
@@ -221,17 +239,19 @@ class _RegisterState extends State<Register> {
                                 strokeWidth: 3,
                               ),
                             ),
-                          Text(
+                          const Text(
                             'Create User',
-                            style: GoogleFonts.montserrat(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(
+                                fontSize: 18.0, 
+                                fontWeight: FontWeight.bold, 
+                              ),
                           ),
+
                         ],
                       ),
                     ),
+                          const SizedBox(height: 50,)
+
                   ],
                 ),
               ),

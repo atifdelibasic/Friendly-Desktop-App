@@ -15,7 +15,7 @@ class ReportsService {
     String uri = '${AppUrl.baseUrl}/report?page=${currentPage - 1}&PageSize=10';
     var token = await UserPreferences().getToken();
 
-    if (searchText != null && searchText.isNotEmpty) {
+    if (searchText.isNotEmpty) {
       uri += '&text=$searchText';
     }
 

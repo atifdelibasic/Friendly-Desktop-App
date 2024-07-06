@@ -34,12 +34,13 @@ class AuthProvider extends ChangeNotifier {
     _registeredInStatus = value;
   }
 
-  Future<Map<String, dynamic>> register(String? email, String? password, String? firstName, String? lastName) async {
+  Future<Map<String, dynamic>> register(String? email, String? password, String? firstName, String? lastName, bool isAdmin) async {
     final Map<String, dynamic> apiBodyData = {
   "firstName": firstName,
   "lastName": lastName,
   "email": email,
-  "password": password
+  "password": password,
+  "isAdmin": isAdmin
     };
 
     try {

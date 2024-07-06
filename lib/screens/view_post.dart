@@ -82,7 +82,7 @@ class _ViewPostState extends State<ViewPost> {
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
-              _buildDetailRow('Reported by', '${widget.report.user.firstName} ${widget.report.user.lastName}'),
+              _buildDetailRow('Reported by', '${widget.report.user?.firstName} ${widget.report.user?.lastName}'),
               _buildDetailRow('Report Reason', widget.report.reportReason.description),
               _buildDetailRow('Additional Comment', widget.report.additionalComment ?? 'No additional comments'),
               _buildDetailRow('Reported at', _formatDateString(widget.report.dateCreated)),

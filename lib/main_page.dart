@@ -2,8 +2,6 @@ import 'package:dart_amqp/dart_amqp.dart';
 import 'package:desktop_friendly_app/screens/statistics_screen.dart';
 import 'package:desktop_friendly_app/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -81,9 +79,6 @@ class _MainPageState extends State<MainPage> {
                 const SizedBox(width: 4),
                 Text(
                   "Friendly App - Admin Panel",
-                  style: GoogleFonts.montserrat(
-                    fontSize: 16,
-                  ),
                 ),
               ],
             ),

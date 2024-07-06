@@ -21,8 +21,10 @@ class HobbyScreen extends StatefulWidget {
 }
 
 class _HobbyScreenState extends State<HobbyScreen> {
-  final HobbyService _hobbyService = HobbyService(baseUrl: 'https://api.example.com');
-  final HobbyCategoryService _hobbyCategoryService = HobbyCategoryService(baseUrl: 'https://api.example.com');
+  final HobbyService _hobbyService =
+      HobbyService(baseUrl: 'https://api.example.com');
+  final HobbyCategoryService _hobbyCategoryService =
+      HobbyCategoryService(baseUrl: 'https://api.example.com');
   int currentPage = 1;
   String searchText = '';
   int count = 0;
@@ -39,7 +41,7 @@ class _HobbyScreenState extends State<HobbyScreen> {
     fetchHobbyCategories();
   }
 
-   @override
+  @override
   void dispose() {
     _debounce?.cancel();
     super.dispose();
@@ -52,7 +54,8 @@ class _HobbyScreenState extends State<HobbyScreen> {
     });
 
     try {
-      HobbyCategoryResponse response = await _hobbyCategoryService.fetchHobbyCategories(searchText, currentPage, 10);
+      HobbyCategoryResponse response = await _hobbyCategoryService
+          .fetchHobbyCategories(searchText, currentPage, 10);
       setState(() {
         hobbyCategories = response;
         count = response.count;
@@ -73,7 +76,8 @@ class _HobbyScreenState extends State<HobbyScreen> {
     });
 
     try {
-      HobbyResponse response = await _hobbyService.fetchHobby(searchText, currentPage, 10);
+      HobbyResponse response =
+          await _hobbyService.fetchHobby(searchText, currentPage, 10);
       setState(() {
         hobbies = response.hobbies;
         count = response.count;
@@ -87,7 +91,7 @@ class _HobbyScreenState extends State<HobbyScreen> {
     }
   }
 
- void searchTextChanged(String text) {
+  void searchTextChanged(String text) {
     setState(() {
       searchText = text;
       currentPage = 1;
@@ -111,7 +115,11 @@ class _HobbyScreenState extends State<HobbyScreen> {
       'Authorization': 'Bearer $token',
     };
 
-    Map<String, dynamic> data = {'name': name, 'hobbyCategoryId': id, 'decsription': "asdasdasdasd"};
+    Map<String, dynamic> data = {
+      'name': name,
+      'hobbyCategoryId': id,
+      'decsription': "asdasdasdasd"
+    };
 
     final response = await http.post(
       Uri.parse('${AppUrl.baseUrl}/hobby'),
@@ -126,14 +134,16 @@ class _HobbyScreenState extends State<HobbyScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Hobby created successfully!', style: TextStyle(color: Colors.white)),
+          content: Text('Hobby created successfully!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       fetchHobbies();
     }
   }
 
-  Future<void> updateHobbyCategory(int id, String name, int hobbyCategoryId) async {
+  Future<void> updateHobbyCategory(
+      int id, String name, int hobbyCategoryId) async {
     String token = await UserPreferences().getToken();
 
     Map<String, String> headers = {
@@ -141,7 +151,11 @@ class _HobbyScreenState extends State<HobbyScreen> {
       'Authorization': 'Bearer $token',
     };
 
-    Map<String, dynamic> data = {'title': name, 'description': 'testiranje', 'hobbyCategoryId': hobbyCategoryId };
+    Map<String, dynamic> data = {
+      'title': name,
+      'description': 'testiranje',
+      'hobbyCategoryId': hobbyCategoryId
+    };
 
     final response = await http.put(
       Uri.parse('${AppUrl.baseUrl}/hobby/$id'),
@@ -155,7 +169,8 @@ class _HobbyScreenState extends State<HobbyScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Hobby updated successfully!', style: TextStyle(color: Colors.white)),
+          content: Text('Hobby updated successfully!',
+              style: TextStyle(color: Colors.white)),
         ),
       );
       fetchHobbies();
@@ -171,7 +186,10 @@ class _HobbyScreenState extends State<HobbyScreen> {
     };
 
     final response = await http.put(
-      Uri.parse('${AppUrl.baseUrl}/country/delete?id=' + countryId.toString() + '&isDeleted=' + isDeleted.toString()),
+      Uri.parse('${AppUrl.baseUrl}/country/delete?id=' +
+          countryId.toString() +
+          '&isDeleted=' +
+          isDeleted.toString()),
       headers: headers,
     );
 
@@ -181,7 +199,8 @@ class _HobbyScreenState extends State<HobbyScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.green,
-          content: Text('Country updated successfully!', style: TextStyle(color: Colors.white)),
+          content: Text('Country updated successfully!',
+              style: TextStyle(color: Colors.white)),
           duration: Duration(seconds: 1),
         ),
       );
@@ -194,14 +213,13 @@ class _HobbyScreenState extends State<HobbyScreen> {
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Row(
-            children: [
-              Text('Hobbies'),
-            ],
-          ),
+          children: [
+            Text('Hobbies'),
+          ],
+        ),
       ),
       body: Column(
         children: [
-          
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -216,52 +234,50 @@ class _HobbyScreenState extends State<HobbyScreen> {
                   ),
                 ),
                 const SizedBox(width: 10),
-                
               ],
             ),
           ),
           Card(
-      color: Colors.yellow[100],
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.warning, color: Colors.yellow[800]),
-                SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Warning!',
+            color: Colors.yellow[100],
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.warning, color: Colors.yellow[800]),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Warning!',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.yellow[800],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Be careful with deleting hobbies. Some users may use them. ',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.yellow[800],
+                      fontSize: 16,
+                      color: Colors.yellow[900],
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Be careful with deleting hobbies. Some users may use them. ',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.yellow[900],
+                  SizedBox(height: 16),
+                ],
               ),
             ),
-            SizedBox(height: 16),
-          
-          ],
-        ),
-      ),
-    ),
+          ),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -293,7 +309,6 @@ class _HobbyScreenState extends State<HobbyScreen> {
                               child: Text('Actions'),
                             ),
                           ),
-                        
                         ],
                         rows: hobbies.map((hobbyCategory) {
                           return DataRow(
@@ -306,25 +321,29 @@ class _HobbyScreenState extends State<HobbyScreen> {
                                 width: 150,
                                 child: Text(hobbyCategory.dateCreated),
                               )),
-                             DataCell(
-                             Row(
-                              children: [
-                                IconButton(
-                                  icon:const Icon(Icons.delete,  color: Colors.red,),
-                                  onPressed: () {
-                                    deleteItem(hobbyCategory.id);
-                                  },
+                              DataCell(
+                                Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                      onPressed: () {
+                                        deleteItem(hobbyCategory.id);
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.edit,
+                                          color: Colors.blueGrey),
+                                      onPressed: () {
+                                        _showEditHobbyModal(
+                                            context, hobbyCategory);
+                                      },
+                                    ),
+                                  ],
                                 ),
-                                IconButton(
-                                icon:const Icon(Icons.edit, color: Colors.blueGrey),
-                                onPressed: () {
-                                    _showEditHobbyModal(context, hobbyCategory);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                              
+                              ),
                             ],
                           );
                         }).toList(),
@@ -351,8 +370,10 @@ class _HobbyScreenState extends State<HobbyScreen> {
                       await fetchHobbies();
                     },
                     useGroup: false,
-                    totalPage: (count / 10).ceil() == 0 ? 1 : (count / 10).ceil(),
-                    show: (count / 10).ceil() <= 1 ? 0 : (count / 10).ceil() - 1,
+                    totalPage:
+                        (count / 10).ceil() == 0 ? 1 : (count / 10).ceil(),
+                    show:
+                        (count / 10).ceil() <= 1 ? 0 : (count / 10).ceil() - 1,
                     currentPage: currentPage,
                   ),
                 ],
@@ -371,8 +392,6 @@ class _HobbyScreenState extends State<HobbyScreen> {
     );
   }
 
-  
-
   void _showCreateHobbyCategoryModal(BuildContext context) {
     String hobbyCategoryName = '';
     int selectedHobbyCategory = 0;
@@ -382,37 +401,38 @@ class _HobbyScreenState extends State<HobbyScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Create Hobby'),
-          content:  Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              onChanged: (value) {
-                hobbyCategoryName = value;
-              },
-              decoration: InputDecoration(
-                hintText: 'Enter hobby name',
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                onChanged: (value) {
+                  hobbyCategoryName = value;
+                },
+                decoration: InputDecoration(
+                  hintText: 'Enter hobby name',
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            DropdownButtonFormField<HobbyCategory>(
-              onChanged: (HobbyCategory? value) {
-                setState(() {
-                  selectedHobbyCategory = value!.id;
-                });
-              },
-              items: hobbyCategories.hobbyCategories.map((HobbyCategory country) {
-                return DropdownMenuItem<HobbyCategory>(
-                  value: country,
-                  child: Text(country.name),
-                );
-              }).toList(),
-              decoration: InputDecoration(
-                labelText: 'Select Hobby Category',
-                border: OutlineInputBorder(),
+              SizedBox(height: 20),
+              DropdownButtonFormField<HobbyCategory>(
+                onChanged: (HobbyCategory? value) {
+                  setState(() {
+                    selectedHobbyCategory = value!.id;
+                  });
+                },
+                items: hobbyCategories.hobbyCategories
+                    .map((HobbyCategory country) {
+                  return DropdownMenuItem<HobbyCategory>(
+                    value: country,
+                    child: Text(country.name),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  labelText: 'Select Hobby Category',
+                  border: OutlineInputBorder(),
+                ),
               ),
-            ),
-          ],
-        ),
+            ],
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -423,7 +443,8 @@ class _HobbyScreenState extends State<HobbyScreen> {
             TextButton(
               onPressed: () async {
                 if (hobbyCategoryName.isNotEmpty) {
-                  await createHobbyCategory(hobbyCategoryName, selectedHobbyCategory);
+                  await createHobbyCategory(
+                      hobbyCategoryName, selectedHobbyCategory);
                   Navigator.of(context).pop();
                 }
               },
@@ -436,64 +457,66 @@ class _HobbyScreenState extends State<HobbyScreen> {
   }
 
   void deleteItem(int id) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: Text('Are you sure?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              String token = await UserPreferences().getToken();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Delete'),
+          content: Text('Are you sure?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String token = await UserPreferences().getToken();
 
-              String uri = "${AppUrl.baseUrl}/hobby/$id";
+                String uri = "${AppUrl.baseUrl}/hobby/$id";
 
-              var res = await http.delete(
-                Uri.parse(uri),
-                headers: {
-                  'Authorization': 'Bearer $token',
-                },
-              );
-
-              if (res.statusCode == 200) {
-               
-                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.green,
-                    content: Text('User deleted successfully!', style: TextStyle(color: Colors.white)),
-                  ),
+                var res = await http.delete(
+                  Uri.parse(uri),
+                  headers: {
+                    'Authorization': 'Bearer $token',
+                  },
                 );
-                fetchHobbies();
 
-              } else {
+                if (res.statusCode == 200) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: Colors.red,
-                    content: Text('Something went wrong!', style: TextStyle(color: Colors.white)),
-                  ),
-                );
-              }
+                    SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text('Hobby deleted successfully!',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  );
+                  fetchHobbies();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      backgroundColor: Colors.red,
+                      content: Text('Something went wrong!',
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  );
+                }
 
-              Navigator.of(context).pop();
-            },
-            child: Text('Delete'),
-          ),
-        ],
-      );
-    },
-  );
-}
+                Navigator.of(context).pop();
+              },
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
- void _showEditHobbyModal(BuildContext context, Hobby hobby) {
-    final TextEditingController nameController = TextEditingController(text: hobby.title);
-    HobbyCategory? selectedHobby = hobbyCategories.hobbyCategories.firstWhere((c) => c.id == hobby.hobbyCategoryId);
+  void _showEditHobbyModal(BuildContext context, Hobby hobby) {
+    final TextEditingController nameController =
+        TextEditingController(text: hobby.title);
+    HobbyCategory? selectedHobby = hobbyCategories.hobbyCategories
+        .firstWhere((c) => c.id == hobby.hobbyCategoryId);
 
     showDialog(
       context: context,
@@ -515,7 +538,9 @@ class _HobbyScreenState extends State<HobbyScreen> {
                     selectedHobby = newValue;
                   });
                 },
-                items: hobbyCategories.hobbyCategories.map<DropdownMenuItem<HobbyCategory>>((HobbyCategory country) {
+                items: hobbyCategories.hobbyCategories
+                    .map<DropdownMenuItem<HobbyCategory>>(
+                        (HobbyCategory country) {
                   return DropdownMenuItem<HobbyCategory>(
                     value: country,
                     child: Text(country.name),
@@ -531,8 +556,10 @@ class _HobbyScreenState extends State<HobbyScreen> {
               child: Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
-                updateHobbyCategory(hobby.id, nameController.text, selectedHobby!.id);
+              onPressed: () async {
+                await updateHobbyCategory(
+                    hobby.id, nameController.text, selectedHobby!.id);
+                Navigator.of(context).pop();
               },
               child: Text('Save'),
             ),
@@ -541,6 +568,4 @@ class _HobbyScreenState extends State<HobbyScreen> {
       },
     );
   }
-
-
 }

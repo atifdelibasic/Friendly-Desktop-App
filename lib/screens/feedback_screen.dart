@@ -128,7 +128,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                   child: ListTile(
                                     title: Text(feedback.text),
-                                    subtitle: Text('${feedback.user.firstName} ${feedback.user.lastName} - ${formatDateString(feedback.dateCreated)}'),
+                                    subtitle: Text('${feedback.user?.firstName} ${feedback.user?.lastName} - ${formatDateString(feedback.dateCreated)}'),
                                   ),
                                 ),
                               );

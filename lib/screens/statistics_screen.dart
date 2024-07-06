@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../domain/user_post_count.dart';
 import '../services/stats_service.dart';
 import '../domain/stats.dart';
@@ -155,16 +154,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             children: [
               Text(
                 title,
-                style: GoogleFonts.montserrat(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+
               ),
               Text(
                 value,
-                style: GoogleFonts.montserrat(
-                  fontSize: 12,
-                ),
+                
               ),
             ],
           ),
