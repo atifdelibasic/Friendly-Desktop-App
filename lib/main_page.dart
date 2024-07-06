@@ -2,6 +2,7 @@ import 'package:dart_amqp/dart_amqp.dart';
 import 'package:desktop_friendly_app/screens/statistics_screen.dart';
 import 'package:desktop_friendly_app/widgets/navigation_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -9,55 +10,60 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  // late ConnectionSettings settings;
-  // late Client client;
-  // late Channel channel;
-  // late Queue queue;
+  late ConnectionSettings settings;
+  late Client client;
+  late Channel channel;
+  late Queue queue;
 
   @override
   void initState() {
     super.initState();
-    // connectToRabbitMQ();
+    connectToRabbitMQ();
   }
 
-  // void connectToRabbitMQ() async {
-  //   settings = ConnectionSettings(
-  //     host: 'localhost',
-  //     port: 5672,
-  //     virtualHost: '/',
-  //     authProvider: const PlainAuthenticator('myuser', 'mypass'),
-  //   );
+  void connectToRabbitMQ() async {
 
-  //   client = Client(settings: settings);
-  //   try {
-  //     channel = await client.channel();
-  //     queue = await channel.queue('userRegisterQueue');
+    var pass = dotenv.get('MY_PASS');
+    var user = dotenv.get('MY_USER');
+    var host = dotenv.get('HOST');
+    var port = dotenv.get('PORT');
 
-  //     var consumer = await queue.consume();
+    settings = ConnectionSettings(
+      host: host,
+      port: int.parse(port),
+      virtualHost: '/',
+      authProvider: PlainAuthenticator(user, pass),
+    );
+
+    client = Client(settings: settings);
+    try {
+      channel = await client.channel();
+      queue = await channel.queue('userRegisterQueue');
+
+      var consumer = await queue.consume();
 
 
-  //     consumer.listen((AmqpMessage message) {
+      consumer.listen((AmqpMessage message) {
 
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(
-  //           backgroundColor: Colors.green,
-  //           content: Text(message.payloadAsString),
-  //           duration: Duration(seconds: 3),
-  //            action: SnackBarAction(
-  //             label: 'DISMISS',
-  //             textColor: Colors.white,
-  //             onPressed: () {
-  //               // Code to execute when the action button is pressed
-  //             },
-  //   ),
-  //         ),
-  //       );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text(message.payloadAsString),
+            duration: Duration(seconds: 3),
+             action: SnackBarAction(
+              label: 'DISMISS',
+              textColor: Colors.white,
+              onPressed: () {
+              },
+    ),
+          ),
+        );
 
-  //     });
-  //   } catch (e) {
-  //     print("An error occurred: $e");
-  //   }
-  // }
+      });
+    } catch (e) {
+      print("An error occurred: $e");
+    }
+  }
 
   @override
   void dispose() {
