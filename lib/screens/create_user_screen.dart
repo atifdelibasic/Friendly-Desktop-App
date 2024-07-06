@@ -42,19 +42,27 @@ class _RegisterState extends State<Register> {
         });
 
         try {
-          auth.register(
+          auth
+              .register(
             _emailController.text,
             _passwordController.text,
             _firstNameController.text,
             _lastNameController.text,
             isAdmin,
-          ).then((response) {
+          )
+              .then((response) {
             if (!mounted) return;
             setState(() {
               _isSubmitting = false;
             });
 
             if (response['isSuccess']) {
+              form.reset();
+
+              _emailController.text = "";
+              _passwordController.text = "";
+              _firstNameController.text = "";
+              _lastNameController.text = "";
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -72,7 +80,6 @@ class _RegisterState extends State<Register> {
                   );
                 },
               );
-              form.reset();
             } else {
               showDialog(
                 context: context,
@@ -133,37 +140,42 @@ class _RegisterState extends State<Register> {
                   children: [
                     const SizedBox(height: 50),
                     const Text(
-                        'Create a user',
-                        style: TextStyle(
-                          fontSize: 24.0, // Adjust the size as needed
-                          fontWeight: FontWeight.w500 , // Optional: to make the text bold
-                        ),
+                      'Create a user',
+                      style: TextStyle(
+                        fontSize: 24.0, // Adjust the size as needed
+                        fontWeight:
+                            FontWeight.w500, // Optional: to make the text bold
                       ),
+                    ),
                     const SizedBox(height: 30),
                     TextFormField(
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.done,
                       controller: _firstNameController,
                       validator: (value) => validateName(value, 'First name'),
-                      decoration: buildInputDecoration("First name", Icons.person),
+                      decoration:
+                          buildInputDecoration("First name", Icons.person),
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
                       textCapitalization: TextCapitalization.words,
                       controller: _lastNameController,
                       validator: (value) => validateName(value, 'Last name'),
-                      decoration: buildInputDecoration("Last name", Icons.person),
+                      decoration:
+                          buildInputDecoration("Last name", Icons.person),
                     ),
                     const SizedBox(height: 10),
                     TextFormField(
                       controller: _emailController,
                       validator: validateEmail,
-                      decoration: buildInputDecoration("Email", Icons.email_rounded),
+                      decoration:
+                          buildInputDecoration("Email", Icons.email_rounded),
                     ),
                     const SizedBox(height: 10),
                     CheckboxListTile(
                       title: const Text('Make an admin'),
-                      subtitle: const Text("This will add admin permissions (admin role)."),
+                      subtitle: const Text(
+                          "This will add admin permissions (admin role)."),
                       value: isAdmin, // set initial value here
                       onChanged: (newValue) {
                         setState(() {
@@ -175,26 +187,29 @@ class _RegisterState extends State<Register> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                       TextFormField(
-      obscureText: !_passwordVisible,
-      controller: _passwordController,
-      validator: (value) =>
-          value!.isEmpty ? ValidationMessages.passwordRequired : null,
-      decoration: InputDecoration(
-        labelText: "Password",
-        prefixIcon: const Icon(Icons.lock_rounded),
-        suffixIcon: IconButton(
-          icon: Icon(
-            _passwordVisible ? Icons.visibility : Icons.visibility_off,
-          ),
-          onPressed: () {
-            setState(() {
-              _passwordVisible = !_passwordVisible;
-            });
-          },
-        ),
-      ),
-    ),
+                        TextFormField(
+                          obscureText: !_passwordVisible,
+                          controller: _passwordController,
+                          validator: (value) => value!.isEmpty
+                              ? ValidationMessages.passwordRequired
+                              : null,
+                          decoration: InputDecoration(
+                            labelText: "Password",
+                            prefixIcon: const Icon(Icons.lock_rounded),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
                         const SizedBox(height: 15),
                         FlutterPwValidator(
                           key: validatorKey,
@@ -219,7 +234,7 @@ class _RegisterState extends State<Register> {
                     ),
                     const SizedBox(height: 15),
                     ElevatedButton(
-                      onPressed: _isSubmitting ? null : doRegister, 
+                      onPressed: _isSubmitting ? null : doRegister,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.deepPurple,
                         padding: const EdgeInsets.all(20),
@@ -242,16 +257,16 @@ class _RegisterState extends State<Register> {
                           const Text(
                             'Create User',
                             style: TextStyle(
-                                fontSize: 18.0, 
-                                fontWeight: FontWeight.bold, 
-                              ),
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-
                         ],
                       ),
                     ),
-                          const SizedBox(height: 50,)
-
+                    const SizedBox(
+                      height: 50,
+                    )
                   ],
                 ),
               ),
