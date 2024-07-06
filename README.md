@@ -1,3 +1,8 @@
-# desktop_friendly_app
+# Admin panel - Friendly
 
-A new Flutter project.
+This is an admin panel - desktop app for Friendly Social Network.
+
+Login credentials 
+
+Email: atif.delibasic@gmail.com
+Password: Lozinka123!
