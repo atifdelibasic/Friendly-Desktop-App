@@ -21,7 +21,7 @@ class Report {
     required this.dateCreated,
     required this.comment,
     required this.post,
-    required this.seen
+    required this.seen,
   });
 
   factory Report.fromJson(Map<String, dynamic> json) {

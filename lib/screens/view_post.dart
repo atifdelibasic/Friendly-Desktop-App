@@ -158,7 +158,6 @@ class _ViewPostState extends State<ViewPost> {
 
   
   _deletePost () async {
-    print("delete post");
     String token =  await UserPreferences().getToken();
 
    final response = await http.delete(
@@ -168,8 +167,6 @@ class _ViewPostState extends State<ViewPost> {
         },
       );
 
-      print("STATUS CODE " + response.statusCode.toString());
-
       if(response.statusCode == 200) {
          ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Post deleted successfully')),
@@ -177,7 +174,6 @@ class _ViewPostState extends State<ViewPost> {
       widget.onReportsFetched();
 
       Navigator.pop(context);
-        print("obrisan");
       } else {
         const SnackBar(content: Text('Something went wrong'));
       }

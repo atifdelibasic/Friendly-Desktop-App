@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:desktop_friendly_app/report_response.dart';
 import 'package:desktop_friendly_app/screens/view_post.dart';
 import 'package:desktop_friendly_app/services/reports_service.dart';
@@ -25,6 +27,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   bool isLoading = true;
   String error = '';
   List<Report> reports = [];
+  Timer? _debounce;
 
    @override
   void initState() {
@@ -32,6 +35,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
     fetchReports();
   }
+
+   @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+   void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchTextChanged(query);
+    });
+  }
+
 
   void searchTextChanged(String text) {
     setState(() {
@@ -79,7 +96,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: searchTextChanged,
+                    onChanged: _onSearchChanged,
                     decoration: const InputDecoration(
                       hintText: 'Search...',
                       prefixIcon: Icon(Icons.search),

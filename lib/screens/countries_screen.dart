@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:desktop_friendly_app/country_response.dart';
@@ -26,11 +27,25 @@ class _CountriesScreenState extends State<CountriesScreen> {
   bool isLoading = true;
   String error = '';
   List<Country> countries = [];
+  Timer? _debounce;
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchTextChanged(query);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     fetchCountries();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   Future<void> fetchCountries() async {
@@ -169,7 +184,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: searchTextChanged,
+                    onChanged: _onSearchChanged,
                     decoration: const InputDecoration(
                       hintText: 'Search...',
                       prefixIcon: Icon(Icons.search),
@@ -271,7 +286,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                           return DataRow(
                             cells: [
                               DataCell(SizedBox(
-                                width: 150,
+                                width: 10,
                                 child: Text(country.id.toString()),
                               )),
                               DataCell(SizedBox(
@@ -292,7 +307,7 @@ class _CountriesScreenState extends State<CountriesScreen> {
                                 ),
                               )),
                               DataCell(SizedBox(
-                                width: 100,
+                                width: 50,
                                 child: StatefulBuilder(
                                   builder: (BuildContext context, StateSetter setState) {
                                     return Switch(

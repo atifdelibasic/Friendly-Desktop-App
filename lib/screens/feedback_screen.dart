@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pagination/flutter_pagination.dart';
 import 'package:flutter_pagination/widgets/button_styles.dart';
@@ -21,11 +23,26 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   bool isLoading = true;
   String error = '';
   List<FeedbackCustom> feedbacks = [];
+  Timer? _debounce;
+
+   void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchTextChanged(query);
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     fetchFeedbacks();
+  }
+
+  
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   Future<void> fetchFeedbacks() async {
@@ -100,7 +117,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: searchTextChanged,
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Search...',
                 prefixIcon: Icon(Icons.search),

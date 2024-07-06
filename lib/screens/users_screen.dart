@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:desktop_friendly_app/app_url.dart';
 import 'package:desktop_friendly_app/screens/create_user_screen.dart';
@@ -22,11 +23,19 @@ class _HomeState extends State<Home> {
   List<User> dataList = [];
   String searchText = '';
   int count = 0;
+  Timer? _debounce;
+
 
   @override
   void initState() {
     super.initState();
     fetchData(currentPage);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
   }
 
   void searchTextChanged(String text) {
@@ -36,6 +45,12 @@ class _HomeState extends State<Home> {
       currentPage = 1;
     });
     fetchData(currentPage, searchText);
+  }
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchTextChanged(query);
+    });
   }
 
   Future<void> fetchData(int page, [String? searchQuery]) async {
@@ -162,7 +177,7 @@ class _HomeState extends State<Home> {
             SizedBox(width: 20,),
             Expanded(
               child: TextField(
-                onChanged: searchTextChanged,
+                onChanged: _onSearchChanged,
                 decoration: const InputDecoration(
                   hintText: 'Search...',
                   prefixIcon: Icon(Icons.search),

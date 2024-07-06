@@ -13,7 +13,7 @@ class Post {
   final String dateCreated;
   // final String hobbyName;
   final int userId;
-  final User user;
+  final User? user;
 
   Post({
     required this.id,

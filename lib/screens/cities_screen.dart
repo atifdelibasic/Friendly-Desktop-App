@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:desktop_friendly_app/country_response.dart';
 import 'package:desktop_friendly_app/helper.dart';
@@ -32,6 +33,7 @@ class _CitiesScreenState extends State<CitiesScreen> {
   String error = '';
   List<City> cities = [];
   late CountryResponse countries;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -39,6 +41,13 @@ class _CitiesScreenState extends State<CitiesScreen> {
     fetchCities();
     fetchCountries();
   }
+  
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
 
   Future<void> fetchCountries() async {
     countries = await _countryService.fetchCountries(searchText, currentPage, 100);
@@ -263,6 +272,13 @@ void _showEditCityModal(BuildContext context, City city) {
     }
   }
 
+   void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchTextChanged(query);
+    });
+  }
+
   void searchTextChanged(String text) {
     setState(() {
       searchText = text;
@@ -293,7 +309,7 @@ void _showEditCityModal(BuildContext context, City city) {
               children: [
                 Expanded(
                   child: TextField(
-                    onChanged: searchTextChanged,
+                    onChanged: _onSearchChanged,
                     decoration: const InputDecoration(
                       hintText: 'Search...',
                       prefixIcon: Icon(Icons.search),
@@ -400,7 +416,7 @@ void _showEditCityModal(BuildContext context, City city) {
                           return DataRow(
                             cells: [
                                DataCell(SizedBox(
-                                width: 150, 
+                                width: 20, 
                                 child: Text(city.id.toString()),
                               )),
                               DataCell(SizedBox(
@@ -425,7 +441,7 @@ void _showEditCityModal(BuildContext context, City city) {
                                 ),
                               )),
                               DataCell(SizedBox(
-                                width: 100,
+                                width: 50,
                                 child: StatefulBuilder(
                                   builder: (BuildContext context, StateSetter setState) {
                                     return Switch(

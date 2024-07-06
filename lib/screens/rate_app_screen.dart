@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pagination/flutter_pagination.dart';
 import 'package:flutter_pagination/widgets/button_styles.dart';
@@ -21,11 +23,25 @@ class _RateAppScreenState extends State<RateAppScreen> {
   bool isLoading = true;
   String error = '';
   List<RateApp> rateApps = [];
+  Timer? _debounce;
 
   @override
   void initState() {
     super.initState();
     fetchRates();
+  }
+  
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      searchTextChanged(query);
+    });
   }
 
   Future<void> fetchRates() async {
@@ -129,7 +145,7 @@ class _RateAppScreenState extends State<RateAppScreen> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: searchTextChanged,
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Search...',
                 prefixIcon: Icon(Icons.search),
