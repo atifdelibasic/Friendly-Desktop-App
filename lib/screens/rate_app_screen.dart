@@ -16,7 +16,8 @@ class RateAppScreen extends StatefulWidget {
 }
 
 class _RateAppScreenState extends State<RateAppScreen> {
-  final RateAppService _rateAppService = RateAppService(baseUrl: 'https://api.example.com');
+  final RateAppService _rateAppService =
+      RateAppService(baseUrl: 'https://api.example.com');
   int currentPage = 1;
   String searchText = '';
   int count = 0;
@@ -30,7 +31,7 @@ class _RateAppScreenState extends State<RateAppScreen> {
     super.initState();
     fetchRates();
   }
-  
+
   @override
   void dispose() {
     _debounce?.cancel();
@@ -51,7 +52,8 @@ class _RateAppScreenState extends State<RateAppScreen> {
     });
 
     try {
-      RateAppResponse response = await _rateAppService.fetchRates(searchText, currentPage);
+      RateAppResponse response =
+          await _rateAppService.fetchRates(searchText, currentPage);
       setState(() {
         rateApps = response.rateapp;
         count = response.count;
@@ -155,6 +157,7 @@ class _RateAppScreenState extends State<RateAppScreen> {
               ),
             ),
           ),
+          Text("Hint: Search by rate 1 to 5."),
           Expanded(
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
@@ -170,10 +173,12 @@ class _RateAppScreenState extends State<RateAppScreen> {
                                 onTap: () => _showFeedbackModal(rate),
                                 child: Card(
                                   elevation: 3,
-                                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
                                   child: ListTile(
                                     title: _buildStarRating(rate.rating),
-                                    subtitle: Text('${rate.user.firstName} ${rate.user.lastName} - ${formatDateString(rate.dateCreated)}'),
+                                    subtitle: Text(
+                                        '${rate.user.firstName} ${rate.user.lastName} - ${formatDateString(rate.dateCreated)}'),
                                   ),
                                 ),
                               );

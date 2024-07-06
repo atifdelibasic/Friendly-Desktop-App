@@ -19,9 +19,10 @@ class ReportsScreen extends StatefulWidget {
 }
 
 class _ReportsScreenState extends State<ReportsScreen> {
-  final ReportsService _reportsService = ReportsService(baseUrl: 'https://api.example.com');
+  final ReportsService _reportsService =
+      ReportsService(baseUrl: 'https://api.example.com');
 
-   int currentPage = 1;
+  int currentPage = 1;
   String searchText = '';
   int count = 0;
   bool isLoading = true;
@@ -29,26 +30,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
   List<Report> reports = [];
   Timer? _debounce;
 
-   @override
+  @override
   void initState() {
     super.initState();
 
     fetchReports();
   }
 
-   @override
+  @override
   void dispose() {
     _debounce?.cancel();
     super.dispose();
   }
 
-   void _onSearchChanged(String query) {
+  void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       searchTextChanged(query);
     });
   }
-
 
   void searchTextChanged(String text) {
     setState(() {
@@ -66,7 +66,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
     });
 
     try {
-      ReportResponse response = await _reportsService.fetchReports(searchText, currentPage);
+      ReportResponse response =
+          await _reportsService.fetchReports(searchText, currentPage);
       setState(() {
         print("set state ");
         reports = response.reports;
@@ -80,10 +81,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
       });
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return   Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.deepPurple,
         title: const Text('Post reports'),
@@ -107,6 +108,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ],
             ),
           ),
+          Text("Hint: Search by report reason"),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
@@ -120,75 +122,82 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       scrollDirection: Axis.horizontal,
                       child: DataTable(
                         columns: const [
-                           DataColumn(
+                          DataColumn(
                             label: SizedBox(
-                              width: 150, 
+                              width: 150,
                               child: Text('Note'),
                             ),
                           ),
-                           DataColumn(
+                          DataColumn(
                             label: SizedBox(
-                              width: 150, 
+                              width: 150,
                               child: Text('Reported at'),
                             ),
                           ),
-                            DataColumn(
+                          DataColumn(
                             label: SizedBox(
-                              width: 150, 
+                              width: 150,
                               child: Text('Seen by admin'),
                             ),
                           ),
-                           DataColumn(
+                          DataColumn(
                             label: SizedBox(
-                              width: 150, 
+                              width: 150,
                               child: Text('Report reason'),
                             ),
                           ),
-                           DataColumn(
+                          DataColumn(
                             label: SizedBox(
-                              width: 150, 
+                              width: 150,
                               child: Text('Is deleted'),
                             ),
                           ),
-                          DataColumn(   label: SizedBox(
-                              width: 150, 
+                          DataColumn(
+                            label: SizedBox(
+                              width: 150,
                               child: Text('Review'),
-                            ),)
+                            ),
+                          )
                         ],
                         rows: reports.map((report) {
                           return DataRow(
                             cells: [
-                              DataCell(
-                                SizedBox(
-                                width: 150, 
+                              DataCell(SizedBox(
+                                width: 150,
                                 child: Text(report.additionalComment),
                               )),
-                                 DataCell(SizedBox(
-                                width: 150, 
-                                child: Text(formatDateString(report.dateCreated)),
+                              DataCell(SizedBox(
+                                width: 150,
+                                child:
+                                    Text(formatDateString(report.dateCreated)),
                               )),
-                                DataCell(SizedBox(
-                                width: 150, 
+                              DataCell(SizedBox(
+                                width: 150,
                                 child: Text(report.seen ? "Seen" : "Not seen"),
                               )),
-                               DataCell(SizedBox(
-                                width: 150, 
+                              DataCell(SizedBox(
+                                width: 150,
                                 child: Text(report.reportReason.description),
                               )),
-                                DataCell(SizedBox(
-                                width: 150, 
-                                child: Text(report.post == null ? "Deleted" : "Not deleted"),
+                              DataCell(SizedBox(
+                                width: 150,
+                                child: Text(report.post == null
+                                    ? "Deleted"
+                                    : "Not deleted"),
                               )),
-                                 DataCell(SizedBox(
-                                width: 50, 
+                              DataCell(SizedBox(
+                                width: 50,
                                 child: IconButton(
                                   icon: const Icon(Icons.remove_red_eye),
                                   onPressed: () {
-                                     Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ViewPost(post: report.post, report: report, onReportsFetched: fetchReports),
-                                  ),
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ViewPost(
+                                            post: report.post,
+                                            report: report,
+                                            onReportsFetched: fetchReports),
+                                      ),
                                     );
                                   },
                                 ),
@@ -219,8 +228,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       await fetchReports();
                     },
                     useGroup: false,
-                     totalPage: (count / 10).ceil() == 0 ? 1 : (count / 10).ceil(),
-                    show: (count / 10).ceil() <= 1 ? 0 : (count / 10).ceil() - 1,
+                    totalPage:
+                        (count / 10).ceil() == 0 ? 1 : (count / 10).ceil(),
+                    show:
+                        (count / 10).ceil() <= 1 ? 0 : (count / 10).ceil() - 1,
                     currentPage: currentPage,
                   ),
                 ],
@@ -228,6 +239,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             ),
           ),
         ],
-      ),);
+      ),
+    );
   }
 }

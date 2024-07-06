@@ -16,7 +16,8 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
-  final FeedbackService _feedbackService = FeedbackService(baseUrl: 'https://api.example.com');
+  final FeedbackService _feedbackService =
+      FeedbackService(baseUrl: 'https://api.example.com');
   int currentPage = 1;
   String searchText = '';
   int count = 0;
@@ -25,7 +26,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   List<FeedbackCustom> feedbacks = [];
   Timer? _debounce;
 
-   void _onSearchChanged(String query) {
+  void _onSearchChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       searchTextChanged(query);
@@ -38,7 +39,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     fetchFeedbacks();
   }
 
-  
   @override
   void dispose() {
     _debounce?.cancel();
@@ -52,7 +52,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     });
 
     try {
-      FeedbackResponse response = await _feedbackService.fetchFeedbacks(searchText, currentPage);
+      FeedbackResponse response =
+          await _feedbackService.fetchFeedbacks(searchText, currentPage);
       setState(() {
         feedbacks = response.feedbacks;
         count = response.count;
@@ -127,6 +128,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
             ),
           ),
+          Text("Hint: Search by note"),
           Expanded(
             child: isLoading
                 ? Center(child: CircularProgressIndicator())
@@ -142,10 +144,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 onTap: () => _showFeedbackModal(feedback),
                                 child: Card(
                                   elevation: 3,
-                                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
                                   child: ListTile(
                                     title: Text(feedback.text),
-                                    subtitle: Text('${feedback.user?.firstName} ${feedback.user?.lastName} - ${formatDateString(feedback.dateCreated)}'),
+                                    subtitle: Text(
+                                        '${feedback.user?.firstName} ${feedback.user?.lastName} - ${formatDateString(feedback.dateCreated)}'),
                                   ),
                                 ),
                               );
